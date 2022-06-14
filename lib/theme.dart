@@ -28,12 +28,12 @@ abstract class AppTheme {
   static const accentColor = AppColors.accent;
   static final visualDensity = VisualDensity.adaptivePlatformDensity;
 
-  static ThemeData light(ThemeData theme) => ThemeData(
+  static ThemeData light() => ThemeData(
         brightness: Brightness.light,
-        colorScheme: ColorScheme.fromSwatch().copyWith(secondary: accentColor),
+        // colorScheme: ColorScheme.fromSwatch().copyWith(secondary: accentColor),
         visualDensity: visualDensity,
-        textTheme: GoogleFonts.mulishTextTheme(theme.textTheme)
-            .apply(bodyColor: AppColors.textDark),
+        textTheme:
+            GoogleFonts.mulishTextTheme().apply(bodyColor: AppColors.textDark),
         backgroundColor: _LightColors.background,
         scaffoldBackgroundColor: _LightColors.background,
         cardColor: _LightColors.card,
@@ -43,12 +43,12 @@ abstract class AppTheme {
         iconTheme: const IconThemeData(color: AppColors.iconDark),
       );
 
-  static ThemeData dark(ThemeData theme) => ThemeData(
+  static ThemeData dark() => ThemeData(
         brightness: Brightness.dark,
-        colorScheme: ColorScheme.fromSwatch().copyWith(secondary: accentColor),
+        // colorScheme: ColorScheme.fromSwatch().copyWith(secondary: accentColor),
         visualDensity: visualDensity,
-        textTheme: GoogleFonts.mulishTextTheme(theme.textTheme)
-            .apply(bodyColor: AppColors.textLight),
+        textTheme:
+            GoogleFonts.mulishTextTheme().apply(bodyColor: AppColors.textLight),
         backgroundColor: _DarkColors.background,
         scaffoldBackgroundColor: _DarkColors.background,
         cardColor: _DarkColors.card,
