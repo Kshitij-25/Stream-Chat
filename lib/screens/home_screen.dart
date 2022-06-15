@@ -42,6 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        iconTheme: Theme.of(context).iconTheme,
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: ValueListenableBuilder(
@@ -106,41 +107,49 @@ class _BottomNavigationBarState extends State<_BottomNavigationBar> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      top: false,
-      bottom: true,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _NavigationBarItem(
-            label: 'Messages',
-            index: 0,
-            icon: CupertinoIcons.bubble_left_bubble_right_fill,
-            isSelected: (selectedIndex == 0),
-            onTap: handleItemSelected,
-          ),
-          _NavigationBarItem(
-            label: 'Notifications',
-            index: 1,
-            icon: CupertinoIcons.bell_solid,
-            isSelected: (selectedIndex == 1),
-            onTap: handleItemSelected,
-          ),
-          _NavigationBarItem(
-            label: 'Calls',
-            index: 2,
-            icon: CupertinoIcons.phone_fill,
-            isSelected: (selectedIndex == 2),
-            onTap: handleItemSelected,
-          ),
-          _NavigationBarItem(
-            label: 'Contacts',
-            index: 3,
-            icon: CupertinoIcons.person_2_fill,
-            isSelected: (selectedIndex == 3),
-            onTap: handleItemSelected,
-          ),
-        ],
+    return Padding(
+      padding: const EdgeInsets.only(top: 10.0),
+      child: SafeArea(
+        top: false,
+        bottom: true,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _NavigationBarItem(
+              label: 'Messages',
+              index: 0,
+              icon: CupertinoIcons.bubble_left_bubble_right_fill,
+              isSelected: (selectedIndex == 0),
+              onTap: handleItemSelected,
+            ),
+            _NavigationBarItem(
+              label: 'Notifications',
+              index: 1,
+              icon: CupertinoIcons.bell_solid,
+              isSelected: (selectedIndex == 1),
+              onTap: handleItemSelected,
+            ),
+            GlowingActionButton(
+              color: AppColors.secondary,
+              icon: CupertinoIcons.add,
+              onPressed: () {},
+            ),
+            _NavigationBarItem(
+              label: 'Calls',
+              index: 2,
+              icon: CupertinoIcons.phone_fill,
+              isSelected: (selectedIndex == 2),
+              onTap: handleItemSelected,
+            ),
+            _NavigationBarItem(
+              label: 'Contacts',
+              index: 3,
+              icon: CupertinoIcons.person_2_fill,
+              isSelected: (selectedIndex == 3),
+              onTap: handleItemSelected,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -169,28 +178,31 @@ class _NavigationBarItem extends StatelessWidget {
       onTap: () {
         onTap(index);
       },
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            size: 20,
-            color: isSelected ? AppColors.secondary : null,
-          ),
-          const SizedBox(
-            height: 8,
-          ),
-          Text(
-            label,
-            style: isSelected
-                ? const TextStyle(
-                    fontSize: 11,
-                    color: AppColors.secondary,
-                    fontWeight: FontWeight.bold,
-                  )
-                : const TextStyle(fontSize: 11),
-          ),
-        ],
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width / 5,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 20,
+              color: isSelected ? AppColors.secondary : null,
+            ),
+            const SizedBox(
+              height: 8,
+            ),
+            Text(
+              label,
+              style: isSelected
+                  ? const TextStyle(
+                      fontSize: 11,
+                      color: AppColors.secondary,
+                      fontWeight: FontWeight.bold,
+                    )
+                  : const TextStyle(fontSize: 11),
+            ),
+          ],
+        ),
       ),
     );
   }

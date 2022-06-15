@@ -15,9 +15,9 @@ class IconBackground extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
-      borderRadius: BorderRadius.circular(30),
+      borderRadius: BorderRadius.circular(60),
       child: InkWell(
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.circular(60),
         splashColor: AppColors.secondary,
         onTap: onTap,
         child: Padding(
