@@ -6,43 +6,50 @@ import 'package:stream_chat_app/models/models.dart';
 import 'package:stream_chat_app/models/story_data.dart';
 import 'package:stream_chat_app/screens/screens.dart';
 import 'package:stream_chat_app/theme.dart';
+import 'package:stream_chat_app/widgets/display_error_message.dart';
 import 'package:stream_chat_app/widgets/widgets.dart';
+import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
 
 class MessagesPage extends StatelessWidget {
   const MessagesPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      slivers: [
-        const SliverToBoxAdapter(
-          child: _Stories(),
+    // ignore: deprecated_member_use
+    return ChannelListCore(
+      emptyBuilder: (context) => const Center(
+        child: Text(
+          'So empty.\nGo and message someone',
+          textAlign: TextAlign.center,
         ),
-        SliverList(
-          delegate: SliverChildBuilderDelegate(
-            _delegate,
-          ),
+      ),
+      errorBuilder: (context, error) => DisplayErrorMessage(
+        error: error,
+      ),
+      loadingBuilder: (context) => const Center(
+        child: SizedBox(
+          width: 100,
+          height: 100,
+          child: CircularProgressIndicator(),
         ),
-      ],
-    );
-  }
-
-  Widget _delegate(context, index) {
-    final Faker faker = Faker();
-    final date = Helpers.randomDate();
-    return Column(
-      children: [
-        _MessageTitle(
-          messageData: MessageData(
-            senderName: faker.person.name(),
-            message: faker.lorem.sentence(),
-            messageDate: date,
-            dateMessage: Jiffy(date).fromNow(),
-            profilePicture: Helpers.randomPictureUrl(),
-          ),
-        ),
-        const Divider(),
-      ],
+      ),
+      listBuilder: (context, channels) {
+        return CustomScrollView(
+          slivers: [
+            const SliverToBoxAdapter(
+              child: _Stories(),
+            ),
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  return Text("data");
+                },
+                childCount: channels.length,
+              ),
+            )
+          ],
+        );
+      },
     );
   }
 }

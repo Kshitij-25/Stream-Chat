@@ -5,8 +5,11 @@ import 'package:stream_chat_app/pages/calls_page.dart';
 import 'package:stream_chat_app/pages/contacts_page.dart';
 import 'package:stream_chat_app/pages/messages_page.dart';
 import 'package:stream_chat_app/pages/notification_page.dart';
+import 'package:stream_chat_app/screens/screens.dart';
 import 'package:stream_chat_app/theme.dart';
 import 'package:stream_chat_app/widgets/widgets.dart';
+import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
+import 'package:stream_chat_app/app.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -66,8 +69,14 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 10.0),
-            child: Avatar.small(
-              url: Helpers.randomPictureUrl(),
+            child: Hero(
+              tag: 'hero-profile-picture',
+              child: Avatar.small(
+                url: context.currentUserImage,
+                onTap: () {
+                  Navigator.of(context).push(ProfileScreen.route);
+                },
+              ),
             ),
           ),
         ],
