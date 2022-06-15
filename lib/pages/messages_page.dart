@@ -1,6 +1,7 @@
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:jiffy/jiffy.dart';
+import 'package:stream_chat_app/app.dart';
 import 'package:stream_chat_app/helpers.dart';
 import 'package:stream_chat_app/models/models.dart';
 import 'package:stream_chat_app/models/story_data.dart';
@@ -10,13 +11,29 @@ import 'package:stream_chat_app/widgets/display_error_message.dart';
 import 'package:stream_chat_app/widgets/widgets.dart';
 import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
 
-class MessagesPage extends StatelessWidget {
+class MessagesPage extends StatefulWidget {
   const MessagesPage({Key? key}) : super(key: key);
 
+  @override
+  State<MessagesPage> createState() => _MessagesPageState();
+}
+
+class _MessagesPageState extends State<MessagesPage> {
+  final channelListController = ChannelListController();
   @override
   Widget build(BuildContext context) {
     // ignore: deprecated_member_use
     return ChannelListCore(
+      channelListController: channelListController,
+      filter: Filter.and(
+        [
+          Filter.equal('type', 'messaging'),
+          Filter.in_(
+            'members',
+            [StreamChatCore.of(context).currentUser!.id],
+          ),
+        ],
+      ),
       emptyBuilder: (context) => const Center(
         child: Text(
           'So empty.\nGo and message someone',
@@ -42,7 +59,9 @@ class MessagesPage extends StatelessWidget {
             SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
-                  return Text("data");
+                  return _MessageTitle(
+                    channel: channels[index],
+                  );
                 },
                 childCount: channels.length,
               ),
@@ -57,25 +76,25 @@ class MessagesPage extends StatelessWidget {
 class _MessageTitle extends StatelessWidget {
   const _MessageTitle({
     Key? key,
-    required this.messageData,
+    required this.channel,
   }) : super(key: key);
 
-  final MessageData messageData;
+  final Channel channel;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        Navigator.of(context).push(
-          ChatScreen.route(messageData),
-        );
+        // Navigator.of(context).push(
+        //   ChatScreen.route(messageData),
+        // );
       },
       child: Row(
         children: [
           Padding(
             padding: const EdgeInsets.all(12.0),
             child: Avatar.medium(
-              url: messageData.profilePicture,
+              url: Helpers.getChannelImage(channel, context.currentUser!),
             ),
           ),
           Expanded(
@@ -86,7 +105,7 @@ class _MessageTitle extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: Text(
-                    messageData.senderName,
+                    Helpers.getChannelName(channel, context.currentUser!),
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       letterSpacing: 0.2,
@@ -97,14 +116,7 @@ class _MessageTitle extends StatelessWidget {
                 ),
                 SizedBox(
                   width: MediaQuery.of(context).size.width / 1.5,
-                  child: Text(
-                    messageData.message,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textFaded,
-                    ),
-                  ),
+                  child: _buildLastMessage(),
                 ),
               ],
             ),
@@ -118,15 +130,7 @@ class _MessageTitle extends StatelessWidget {
                 const SizedBox(
                   height: 4,
                 ),
-                Text(
-                  messageData.dateMessage.toUpperCase(),
-                  style: const TextStyle(
-                    fontSize: 11,
-                    letterSpacing: -0.2,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textFaded,
-                  ),
-                ),
+                _buildLastMessageAt(),
                 const SizedBox(
                   height: 8,
                 ),
@@ -150,6 +154,60 @@ class _MessageTitle extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildLastMessage() {
+    return BetterStreamBuilder<Message>(
+      stream: channel.state!.lastMessageStream,
+      initialData: channel.state!.lastMessage,
+      builder: (context, lastMessage) {
+        return Text(
+          lastMessage.text ?? '',
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
+            fontSize: 12,
+            color: AppColors.textFaded,
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildLastMessageAt() {
+    return BetterStreamBuilder<DateTime>(
+      stream: channel.lastMessageAtStream,
+      initialData: channel.lastMessageAt,
+      builder: (context, data) {
+        final lastMessageAt = data.toLocal();
+        String stringDate;
+        final now = DateTime.now();
+
+        final startOfDay = DateTime(now.year, now.month, now.day);
+
+        if (lastMessageAt.millisecondsSinceEpoch >=
+            startOfDay.microsecondsSinceEpoch) {
+          stringDate = Jiffy(lastMessageAt.toLocal()).jm;
+        } else if (lastMessageAt.millisecondsSinceEpoch >=
+            startOfDay
+                .subtract(const Duration(days: 1))
+                .millisecondsSinceEpoch) {
+          stringDate = 'Yesterday';
+        } else if (startOfDay.difference(lastMessageAt).inDays < 7) {
+          stringDate = Jiffy(lastMessageAt.toLocal()).EEEE;
+        } else {
+          stringDate = Jiffy(lastMessageAt.toLocal()).yMd;
+        }
+        return Text(
+          stringDate,
+          style: const TextStyle(
+            fontSize: 11,
+            letterSpacing: -0.2,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textFaded,
+          ),
+        );
+      },
     );
   }
 }

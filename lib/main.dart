@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
         return StreamChatCore(
           client: client,
           // ignore: deprecated_member_use
-          child: ChannelsBloc(child: child!),
+          child: ChannelsBloc(child: UsersBloc(child: child!)),
         );
       },
       home: const SelectUserScreen(),
