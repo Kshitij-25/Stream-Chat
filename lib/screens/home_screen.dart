@@ -141,7 +141,22 @@ class _BottomNavigationBarState extends State<_BottomNavigationBar> {
             GlowingActionButton(
               color: AppColors.secondary,
               icon: CupertinoIcons.add,
-              onPressed: () {},
+              onPressed: () {
+                showModalBottomSheet(
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  context: context,
+                  builder: (BuildContext context) => const AspectRatio(
+                    aspectRatio: 8 / 7,
+                    child: Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: ContactsPage(),
+                    ),
+                  ),
+                );
+              },
             ),
             _NavigationBarItem(
               label: 'Calls',

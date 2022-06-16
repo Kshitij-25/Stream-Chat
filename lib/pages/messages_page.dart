@@ -85,9 +85,9 @@ class _MessageTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        // Navigator.of(context).push(
-        //   ChatScreen.route(messageData),
-        // );
+        Navigator.of(context).push(
+          ChatScreen.routeWithChannel(channel),
+        );
       },
       child: Row(
         children: [
@@ -134,21 +134,24 @@ class _MessageTitle extends StatelessWidget {
                 const SizedBox(
                   height: 8,
                 ),
-                Container(
-                  width: 18,
-                  height: 18,
-                  decoration: const BoxDecoration(
-                      color: AppColors.secondary, shape: BoxShape.circle),
-                  child: const Center(
-                    child: Text(
-                      '1',
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: AppColors.textLight,
-                      ),
-                    ),
-                  ),
-                ),
+                Center(
+                  child: UnreadIndicator(channel: channel),
+                )
+                // Container(
+                //   width: 18,
+                //   height: 18,
+                //   decoration: const BoxDecoration(
+                //       color: AppColors.secondary, shape: BoxShape.circle),
+                //   child: const Center(
+                //     child: Text(
+                //       '1',
+                //       style: TextStyle(
+                //         fontSize: 10,
+                //         color: AppColors.textLight,
+                //       ),
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),
@@ -158,17 +161,28 @@ class _MessageTitle extends StatelessWidget {
   }
 
   Widget _buildLastMessage() {
-    return BetterStreamBuilder<Message>(
-      stream: channel.state!.lastMessageStream,
-      initialData: channel.state!.lastMessage,
-      builder: (context, lastMessage) {
-        return Text(
-          lastMessage.text ?? '',
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(
-            fontSize: 12,
-            color: AppColors.textFaded,
-          ),
+    return BetterStreamBuilder<int>(
+      stream: channel.state!.unreadCountStream,
+      initialData: channel.state?.unreadCount ?? 0,
+      builder: (context, count) {
+        return BetterStreamBuilder<Message>(
+          stream: channel.state!.lastMessageStream,
+          initialData: channel.state!.lastMessage,
+          builder: (context, lastMessage) {
+            return Text(
+              lastMessage.text ?? '',
+              overflow: TextOverflow.ellipsis,
+              style: (count > 0)
+                  ? const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.secondary,
+                    )
+                  : const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textFaded,
+                    ),
+            );
+          },
         );
       },
     );
